@@ -1,0 +1,1 @@
+mi bot va a identificar si hay posos,posos con agua o si hay indundaciones en las calles y te dira si es seguro pasar por ahi o no.en caso de que no subas ninguna imagen el bot te dara un mensaje de error
