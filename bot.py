@@ -1,11 +1,10 @@
+
 import discord
 import random
 from discord.ext import commands
 import os
-import random
 import requests
 from model import get_classes
-
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -18,7 +17,7 @@ async def on_ready():
 
 @bot.command()
 async def ayuda(ctx):
-    await ctx.send(f'Hola,me llamo {bot.user}! y estos son los comandos que puedes usar:\nhello\nheh\nadd\nroll\nchoose\nrepeat\njoined\nmem')
+    await ctx.send(f'Hola,me llamo {bot.user}! y estos son los comandos que puedes usar:\nhello\nheh\nadd\nroll\nchoose\nrepeat\njoined\nmem\nduck\ncheck\nuserinfo')
 
 @bot.command()
 async def hello(ctx):
@@ -45,24 +44,18 @@ async def roll(ctx, dice: str):
     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     await ctx.send(result)
 
-
 @bot.command(description='For when you wanna settle the score some other way')
 async def choose(ctx, *choices: str):
     """Chooses between multiple choices."""
     await ctx.send(random.choice(choices))
 
-
 @bot.command()
 async def repeat(ctx, times: int, content='repeating...'):
-    """Repeats a message multiple times."""
     for i in range(times):
         await ctx.send(content)
 
-
 @bot.command()
 async def joined(ctx, member: discord.Member):
-    """Says when a member joined."""
-    # Joined at can be None in very bizarre cases so just handle that as well
     if member.joined_at is None:
         await ctx.send(f'{member} has no join date.')
     else:
@@ -72,24 +65,18 @@ async def joined(ctx, member: discord.Member):
 async def mem(ctx):
     img_name = random.choice(os.listdir("imagenes"))
     with open(f'imagenes/{img_name}', 'rb') as f:
-
         print(os.listdir("imagenes"))
-        # ¡Vamos a almacenar el archivo de la biblioteca Discord convertido en esta variable!
         picture = discord.File(f)
-    # A continuación, podemos enviar este archivo como parámetro.
     await ctx.send(file=picture)
-    
-def get_duck_image_url():    
+
+def get_duck_image_url():
     url = 'https://random-d.uk/api/random'
     res = requests.get(url)
     data = res.json()
     return data['url']
 
-
 @bot.command('duck')
 async def duck(ctx):
-    '''Una vez que llamamos al comando duck, 
-    el programa llama a la función get_duck_image_url'''
     image_url = get_duck_image_url()
     await ctx.send(image_url)
 
@@ -103,9 +90,19 @@ async def check(ctx):
             await ctx.send(get_classes(model_path="./keras_model.h5",labels_path="./labels.txt",image_path=f"./{file_name}"))
     else:
         await ctx.send("no subiste ninguna imagen")
-        
 
+# NUEVA FUNCION
+@bot.command()
+async def userinfo(ctx, member: discord.Member = None):
+    """Muestra información de un usuario."""
+    if member is None:
+        member = ctx.author
 
+    await ctx.send(
+        f'Nombre: {member.name}\n'
+        f'ID: {member.id}\n'
+        f'Cuenta creada: {discord.utils.format_dt(member.created_at)}\n'
+        f'Se unió al servidor: {discord.utils.format_dt(member.joined_at)}'
+    )
 
-            
 bot.run("")
